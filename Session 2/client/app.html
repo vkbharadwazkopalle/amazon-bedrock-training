@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accion Agent</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      /* display: flex; */
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f0f2f5;
+    }
+    #chat-container {
+      width: 100%;
+      /* max-width: 700px; */
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #chat-header {
+      padding: 16px 24px;
+      border-bottom: 2px solid grey;
+      display: flex;
+      
+      align-items: center;
+      color: #C00001;
+    }
+    #messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      min-height: 80vh;
+      background: #f7f9fc;
+    }
+    .message {
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .message.user {
+      text-align: right;
+    }
+    .message .bubble {
+      display: inline-block;
+      padding: 12px 16px;
+      border-radius: 18px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+    .message.user .bubble {
+      background: #f6a8a8;
+      color: #C00001;
+    }
+    .message.bedrock .bubble {
+      background: #e9ebf1;
+      color: #111;
+    }
+    #input-area {
+      display: flex;
+      gap: 8px;
+      padding: 16px;
+      border-top: 1px solid #e5e8ef;
+      background: white;
+    }
+    #user-input {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 999px;
+      outline: none;
+      font-size: 16px;
+    }
+    #send-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 999px;
+      background: #C00001;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #send-btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="chat-header">
+        <img src="./Accion Labs Logo_Colour.png" alt="Accion logo" width="300">
+      <!-- <h1>Accion Agent</h1> -->
+      <p>Helpful agent to answer your queries</p>
+    </div>
+    <div id="messages"></div>
+    <div id="input-area">
+      <input id="user-input" type="text" placeholder="Type your message..." autocomplete="off" />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    function appendMessage(role, text) {
+      const wrapper = document.createElement('div');
+      wrapper.className = `message ${role}`;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      wrapper.appendChild(bubble);
+      messagesEl.appendChild(wrapper);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      appendMessage('user', text);
+      userInput.value = '';
+      sendBtn.disabled = true;
+      appendMessage('bedrock', 'Waiting for response...');
+      try {
+        const response = await fetch('http://localhost:8080/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ messages: [{ role: 'user', content: text }] })
+        });
+        const payload = await response.json();
+        const lastBotMessage = Array.from(messagesEl.querySelectorAll('.message.bedrock')).pop();
+        if (response.ok) {
+          if (lastBotMessage) {
+            lastBotMessage.querySelector('.bubble').textContent = payload.output.choices[0].message.content || 'No response from Bedrock.';
+          }
+        } else {
+          if (lastBotMessage) {
+            lastBotMessage.querySelector('.bubble').textContent = payload.error || 'Unable to get response from Bedrock.';
+          }
+        }
+      } catch (error) {
+        const lastBotMessage = Array.from(messagesEl.querySelectorAll('.message.bedrock')).pop();
+        if (lastBotMessage) {
+          lastBotMessage.querySelector('.bubble').innerHTML = error.message || 'Network error.';
+        }
+      } finally {
+        sendBtn.disabled = false;
+        userInput.focus();
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
