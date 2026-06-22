@@ -6,7 +6,7 @@ with open("README.md", "rb") as f:
     doc_bytes = f.read()  
 
 response = client.converse( 
-    modelId="google.gemma-3-4b-it", 
+    modelId="amazon.nova-pro-v1:0",
     messages=[{ 
         "role": "user", 
         "content": [ 
