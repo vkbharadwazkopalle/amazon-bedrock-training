@@ -22,7 +22,7 @@
 - install aws cli
 - using aws console or cli, create new iam user with appr privileges
 - generate access key
-- run the command `aws configure`
+- run the command `aws configure` on the terminal
 - provide the access keys & secret keys as inputs
 
 ## environment variables

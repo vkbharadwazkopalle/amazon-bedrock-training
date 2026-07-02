@@ -36,7 +36,7 @@ def query_managed_kb(query: str) -> str:
         knowledgeBaseId=mng_kb_id,
         retrievalConfiguration={
             "managedSearchConfiguration": {
-                "numberOfResults": 1
+                "numberOfResults": 2
             }
         }
     )
