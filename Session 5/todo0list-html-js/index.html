@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Todo List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Todo List</h1>
+        </header>
+        
+        <div class="input-section">
+            <input 
+                type="text" 
+                id="todoInput" 
+                placeholder="What needs to be done?" 
+                autocomplete="off"
+            >
+            <button id="addButton">Add</button>
+        </div>
+
+        <div class="stats">
+            <span id="totalCount">0 total</span>
+            <span id="activeCount">0 active</span>
+            <span id="completedCount">0 completed</span>
+        </div>
+
+        <ul id="todoList" class="todo-list"></ul>
+
+        <div class="actions">
+            <button id="clearCompleted" class="secondary-button">Clear Completed</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

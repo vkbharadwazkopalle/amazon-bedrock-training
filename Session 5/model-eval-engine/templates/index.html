@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Model Response Evaluator</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Model Response Evaluator</h1>
+  <form method="post">
+    <label for="model_text">Model Response:</label><br>
+    <textarea id="model_text" name="model_text" rows="6" cols="80"></textarea><br><br>
+    <label for="reference_text">Reference Text:</label><br>
+    <textarea id="reference_text" name="reference_text" rows="6" cols="80"></textarea><br><br>
+    <button type="submit">Evaluate</button>
+  </form>
+  {% if score is not none %}
+    <h2>Score: {{ score | round(4) }}</h2>
+  {% endif %}
+</body>
+</html>
